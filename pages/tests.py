@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import Permission, Group
 from .models import User, EnvironmentalData, Recommendations, GeoLocation
+from django.test import SimpleTestCase
+from django.urls import reverse
 
 ######## Tests for models ########
 class UserModelTestCase(TestCase):
@@ -88,4 +90,49 @@ class GeoLocationModelTestCase(TestCase):
         self.assertEqual(self.location.zipcode, '12345')
 
 
-######## Tests for  ########
+######## Tests for home and about pages ########
+class HomepageTests(SimpleTestCase):
+    """Test cases for the homepage template."""
+
+    def test_url_exists_at_correct_location(self):
+        """Test if the homepage URL exists at the correct location."""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_url_available_by_name(self):
+        """Test if the homepage URL is available by name created in the pages/url.py."""
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_template_name_correct(self):
+        """Test if the correct template is used for the homepage."""
+        response = self.client.get(reverse("home"))
+        self.assertTemplateUsed(response, "home.html")
+
+    def test_template_content(self):
+        """Test the content of the homepage template."""
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, "<h1>Homepage</h1>")
+
+class AboutpageTests(SimpleTestCase):
+    """Test cases for the about page template."""
+
+    def test_url_exists_at_correct_location(self):
+        """Test if the about page URL exists at the correct location."""
+        response = self.client.get("/about/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_url_available_by_name(self):
+        """Test if the about page URL is available by name."""
+        response = self.client.get(reverse("about"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_template_name_correct(self):
+        """Test if the correct template is used for the about page."""
+        response = self.client.get(reverse("about"))
+        self.assertTemplateUsed(response, "about.html")
+
+    def test_template_content(self):
+        """Test the content of the about page template."""
+        response = self.client.get(reverse("about"))
+        self.assertContains(response, "<h1>About page</h1>")
