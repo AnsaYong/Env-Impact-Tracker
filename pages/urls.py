@@ -3,7 +3,7 @@ from . import views
 
 
 urlpatterns = [
-    path('api/user', views.user_api, name='user_api'),
-    path('api/environmental_data', views.environmental_data_api, name='environmental_data_api'),
-    path('api/recommendations', views.recommendations_api, name='recommendations_api'),
+    path('api/user', views.UserAPIView.as_view(), name='user_api'),
+    path('api/environmental_data', views.EnvironmentalDataAPIView.as_view(), name='environmental_data_api'),
+    path('api/recommendations', views.RecommendationsAPIView.as_view(), name='recommendations_api'),
 ]
