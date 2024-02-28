@@ -2,8 +2,15 @@
 
 from django.http import JsonResponse
 from django.views import View
+from django.views.generic import TemplateView
 #from .models import User, EnvironmentalData, Recommendations
 
+
+class LandingPageView(TemplateView):
+        """
+        Landing page for the application
+        """
+        template_name = 'home.html'
 
 class UserAPIView(View):
     """
