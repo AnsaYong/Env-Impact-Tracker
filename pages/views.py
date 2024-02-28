@@ -6,11 +6,17 @@ from django.views.generic import TemplateView
 #from .models import User, EnvironmentalData, Recommendations
 
 
-class LandingPageView(TemplateView):
+class HomePageView(TemplateView):
         """
         Landing page for the application
         """
         template_name = 'home.html'
+
+class AboutPageView(TemplateView):
+        """
+        About page for the application
+        """
+        template_name = 'about.html'
 
 class UserAPIView(View):
     """
