@@ -1,0 +1,35 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card mt-5">
+            <div class="card-body">
+                <div class="card-title py-3">
+                    <h5>Energy Consumption</h5>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- Input field for energy source -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="source">Source:</label>
+                        <input type="text" name="source" id="source" class="form-control" required>
+                    </div>
+                    <!-- Input field for energy amount -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="amount">Amount (kWh):</label>
+                        <input type="number" name="amount" id="amount" class="form-control" required>
+                    </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-4"></div>
+</div>
+{% endblock %}
+

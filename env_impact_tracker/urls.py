@@ -22,4 +22,5 @@ urlpatterns = [
 
     path('', include('pages.urls')),    # Should take the user straight to the landing page
     path('authentication/', include('authentication.urls')),
+    path('data_collection/', include('data_collection.urls')),
 ]

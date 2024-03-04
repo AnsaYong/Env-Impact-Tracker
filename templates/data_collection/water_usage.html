@@ -1,0 +1,38 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card mt-5">
+            <div class="card-body">
+                <div class="card-title py-3">
+                    <h5>Water Usage</h5>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="consumption">Water Consumption (in liters):</label>
+                        <input type="number" name="consumption" id="consumption" class="form-control" required>
+                    </div>
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="frequency">Frequency:</label>
+                        <select name="frequency" id="frequency" class="form-control" required>
+                            <option value="">Select Frequency</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-4"></div>
+</div>
+{% endblock %}
