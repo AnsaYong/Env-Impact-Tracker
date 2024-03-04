@@ -1,4 +1,4 @@
-#from django.shortcuts import render
+from django.shortcuts import render
 
 from django.http import JsonResponse
 from django.views import View
@@ -6,17 +6,17 @@ from django.views.generic import TemplateView
 #from .models import User, EnvironmentalData, Recommendations
 
 
-class HomePageView(TemplateView):
-        """
-        Landing page for the application
-        """
-        template_name = 'home.html'
+class LandingView(View):
+    def get(self, request):
+        return render(request, 'pages/landing_page.html')
+    
+class IndexView(View):
+    def get(self, request):
+        return render(request, 'pages/index.html')
 
-class AboutPageView(TemplateView):
-        """
-        About page for the application
-        """
-        template_name = 'about.html'
+class AddExpenseView(View):
+    def get(self, request):
+        return render(request, 'pages/add_expense.html')
 
 class UserAPIView(View):
     """

@@ -19,5 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('pages.urls')),
+
+    path('', include('pages.urls')),    # Should take the user straight to the landing page
+    path('authentication/', include('authentication.urls')),
 ]
