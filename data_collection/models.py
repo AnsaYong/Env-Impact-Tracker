@@ -50,9 +50,6 @@ class FoodConsumption(models.Model):
     dietary_choices = models.TextField()
     frequency = models.CharField(max_length=50)  # e.g., daily, weekly, monthly
 
-    def __str__(self):
-        return self.dietary_choices[:50]
-
 class ShoppingHabits(models.Model):
     """Model to store shopping habits."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
@@ -63,7 +60,7 @@ class Housing(models.Model):
     """Model to store housing situation."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     home_size = models.FloatField()
-    energy_efficiency = models.BooleanField()
+    energy_efficiency = models.BooleanField() 
     heating_method = models.CharField(max_length=255)
     cooling_method = models.CharField(max_length=255)
     location = models.CharField(max_length=255)  # e.g., urban, suburban, rural

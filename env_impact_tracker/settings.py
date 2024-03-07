@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'authentication.apps.AuthenticationConfig',
     'data_collection.apps.DataCollectionConfig',
+    'impact.apps.ImpactConfig',
 ]
 
 MIDDLEWARE = [

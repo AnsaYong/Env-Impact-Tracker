@@ -12,30 +12,32 @@
                 </div>
 
                 <!-- Form -->
-                <form action="{% url 'register' %}" method="post" autocomplete="off">
+                <form action="{% url 'register' %}" method="post">
                     {% csrf_token %}
                     <!-- Username field -->
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 20px;">
                         <input
                             type="text"
                             name="username"
                             placeholder="Username"
                             id="usernameField"
                             class="form-control form-control-sm"
+                            autocomplete="on"
                         />
                     </div>
                     <!-- Email field -->
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 20px;">
                         <input
                             type="email"
                             name="email"
                             placeholder="Email"
                             id="emailField"
                             class="form-control form-control-sm"
+                            autocomplete="on"
                         />
                     </div>
                     <!-- Password field -->
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 20px;">
                         <input
                             type="password"
                             name="password"
@@ -44,7 +46,6 @@
                             class="form-control form-control-sm"
                         />
                         <small style='display:block; cursor:pointer;' class="text-end py-3 showPasswordToggle">SHOW</small>
-                        <div style="clear: both;"></div>
                     </div>
                     <!-- Register button -->
                     <button type="submit" value="Register" class="btn btn-block btn-bd-primary submit-btn">Register</button>

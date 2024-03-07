@@ -46,3 +46,32 @@
   .navbar .form-control {
     padding: .75rem 1rem;
   }
+
+
+  /*
+   * header
+   */
+
+   .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.header-icons a {
+    margin-right: 20px; /* Adjust the spacing between icons */
+    padding: 20px;
+}
+
+.header-message {
+    font-weight: bold;
+    color: wheat;
+    font-size: large;
+}
+
+.bg-light {
+  background-color: #f8f9fa; /* Light grey color */
+  border: 1px solid #ddd; /* Light grey border */
+}
+

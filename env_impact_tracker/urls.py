@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
+    path('admin/', admin.site.urls),    # The admin page
     path('', include('pages.urls')),    # Should take the user straight to the landing page
-    path('authentication/', include('authentication.urls')),
-    path('data_collection/', include('data_collection.urls')),
+    path('authentication/', include('authentication.urls')),    # The authentication app
+    path('data_collection/', include('data_collection.urls')),  # The data_collection app
+    path('impact/', include('impact.urls')),    # The impact app
 ]

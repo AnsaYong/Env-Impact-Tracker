@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 from django.views import View
 from .models import EnergyConsumption, Transportation, WasteGeneration, WaterUsage, FoodConsumption, ShoppingHabits, Housing
 
@@ -11,17 +12,33 @@ class EnergyConsumptionView(View):
 
     def post(self, request):
         """Saves the energy consumption data."""
+
+        # Get form data
         source = request.POST['source']
         amount = request.POST['amount']
 
-        # Assuming the user is logged in
-        user = request.user
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
 
         # Create and save the EnergyConsumption object
         energy_consumption = EnergyConsumption.objects.create(user=user, source=source, amount=amount)
         energy_consumption.save()
 
-        return redirect('dashboard')
+        # Redirect to the next form or dashboard based on user status
+        if new_user_username and new_user_email:
+            return redirect('transportation')
+        else:
+            return redirect('dashboard')
     
 class TransportationView(View):
     """Provides a method that allows the user to input their transportation data."""
@@ -34,14 +51,29 @@ class TransportationView(View):
         mode = request.POST['mode']
         distance = request.POST['distance']
 
-        # Assuming the user is logged in
-        user = request.user
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
 
         # Create and save the Transportation object
         transportation_data = Transportation.objects.create(user=user, mode=mode, distance=distance)
         transportation_data.save()
         
-        return redirect('dashboard')
+        # Redirect the user based on whether they are new or authenticated
+        # Redirect to the next form or dashboard based on user status
+        if new_user_username and new_user_email:
+            return redirect('waste_generation')
+        else:
+            return redirect('dashboard')
     
 class WasteGenerationView(View):
     """Provides a method that allows the user to input their waste generation data."""
@@ -59,12 +91,26 @@ class WasteGenerationView(View):
         recycling_habits = request.POST['recycling_habits']
         composting_habits = request.POST['composting_habits']
 
-        user = request.user
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
 
         waste_generation = WasteGeneration.objects.create(user=user, waste_type=waste_type, amount=amount, unit=unit, frequency=frequency, location=location, recycling_habits=recycling_habits, composting_habits=composting_habits)
         waste_generation.save()
         
-        return redirect('dashboard')
+        if new_user_username and new_user_email:
+            return redirect('water_usage')
+        else:
+            return redirect('dashboard')
     
 class WaterUsageView(View):
     """Provides a method that allows the user to input their water usage data."""
@@ -77,12 +123,26 @@ class WaterUsageView(View):
         consumption = request.POST['consumption']
         frequency = request.POST['frequency']
 
-        user = request.user
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
 
         water_usage = WaterUsage.objects.create(user=user, consumption=consumption, frequency=frequency)
         water_usage.save()
 
-        return redirect('dashboard')
+        if new_user_username and new_user_email:
+            return redirect('food_consumption')
+        else:
+            return redirect('dashboard')
     
 class FoodConsumptionView(View):
     """Provides a method that allows the user to input their food consumption data."""
@@ -93,9 +153,28 @@ class FoodConsumptionView(View):
     def post(self, request):
         """Saves the food consumption data."""
         dietary_choices = request.POST['dietary_choices']
-        user = request.user
-        FoodConsumption.objects.create(user=user, dietary_choices=dietary_choices)
-        return redirect('food_consumption')
+        frequency = request.POST['frequency']
+
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
+
+        food_consumption = FoodConsumption.objects.create(user=user, dietary_choices=dietary_choices, frequency=frequency)
+        food_consumption.save()
+
+        if new_user_username and new_user_email:
+            return redirect('shopping_habits')
+        else:
+            return redirect('dashboard')
     
 class ShoppingHabitsView(View):
     """Provides a method that allows the user to input their shopping habits data."""
@@ -106,9 +185,28 @@ class ShoppingHabitsView(View):
     def post(self, request):
         """Saves the shopping habits data."""
         purchasing_decisions = request.POST['purchasing_decisions']
-        user = request.user
-        ShoppingHabits.objects.create(user=user, purchasing_decisions=purchasing_decisions)
-        return redirect('shopping_habits')
+        frequency = request.POST['frequency']
+
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
+
+        shopping_habits = ShoppingHabits.objects.create(user=user, purchasing_decisions=purchasing_decisions, frequency=frequency)
+        shopping_habits.save()
+
+        if new_user_username and new_user_email:
+            return redirect('housing')
+        else:
+            return redirect('dashboard')
     
 class HousingView(View):
     """Provides a method that allows the user to input their housing data."""
@@ -122,20 +220,28 @@ class HousingView(View):
         energy_efficiency = request.POST['energy_efficiency']
         heating_method = request.POST['heating_method']
         cooling_method = request.POST['cooling_method']
-        user = request.user
-        Housing.objects.create(user=user, home_size=home_size, energy_efficiency=energy_efficiency, heating_method=heating_method, cooling_method=cooling_method)
-        return redirect('housing')
-    
-class DashboardView(View):
-    """Provides a method that allows the user to view their data."""
-    def get(self, request):
-        """Renders the dashboard."""
-        user = request.user
-        energy_consumption = EnergyConsumption.objects.filter(user=user)
-        transportation = TransportationData.objects.filter(user=user)
-        waste_generation = WasteGeneration.objects.filter(user=user)
-        water_usage = WaterUsage.objects.filter(user=user)
-        food_consumption = FoodConsumption.objects.filter(user=user)
-        shopping_habits = ShoppingHabits.objects.filter(user=user)
-        housing = Housing.objects.filter(user=user)
-        return render(request, 'data_collection/dashboard.html', {'energy_consumption': energy_consumption, 'transportation': transportation, 'waste_generation': waste_generation, 'water_usage': water_usage, 'food_consumption': food_consumption, 'shopping_habits': shopping_habits, 'housing': housing})
+        location = request.POST['location']
+
+        # Check if the user is new (registered in the current session)
+        new_user_username = request.session.get('new_user_username')
+        new_user_email = request.session.get('new_user_email')
+
+        if new_user_username and new_user_email:
+            # Check if the user exists in the database
+            if User.objects.filter(username=new_user_username, email=new_user_email).exists():
+                # Use the newly created user's information
+                user = User.objects.get(username=new_user_username, email=new_user_email)
+        else:
+            # Use the authenticated user
+            user = request.user
+
+        housing = Housing.objects.create(user=user, home_size=home_size, energy_efficiency=energy_efficiency, heating_method=heating_method, cooling_method=cooling_method, location=location)
+        housing.save()
+
+        if new_user_username and new_user_email:
+            # call function to calculate environmental impact if the user is new (this should be loaded with redirection to the dashboard)
+            # the function that calculates the environmental impact should be in the impact/views.py file
+            # it should also save the environmental impact in the database
+            pass
+        
+        return redirect('dashboard')

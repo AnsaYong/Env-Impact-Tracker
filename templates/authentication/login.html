@@ -16,17 +16,18 @@
                 <form action="{% url 'login' %}" method="post" autocomplete="off">
                     {% csrf_token %}
                     <!-- Username field -->
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 20px;">
                         <input
                             type="text"
                             name="username"
                             placeholder="Username"
                             id="usernameField"
                             class="form-control form-control-sm"
+                            autocomplete="on"
                         />
                     </div>
                     <!-- Password field -->
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 20px;">
                         <input
                             type="password"
                             name="password"
@@ -35,11 +36,15 @@
                             class="form-control form-control-sm"
                         />
                         <small style='display:block; cursor:pointer;' class="text-end py-3 showPasswordToggle">SHOW</small>
-                        <div style="clear: both;"></div>
                     </div>
                     <!-- Login button -->
                     <button type="submit" value="Login" class="btn btn-block btn-bd-primary submit-btn">Login</button>
                 </form>
+
+                <!-- Message for new users -->
+                <div class="text-center py-3">
+                    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,52 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card mt-5">
+            <div class="card-body">
+                <div class="card-title py-3">
+                    <h5>Housing</h5>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- Input field for home size -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="home_size">Home Size (sq ft):</label>
+                        <input type="number" name="home_size" id="home_size" class="form-control" required>
+                    </div>
+                    <!-- Input field for energy efficiency -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="energy_efficiency">Energy Efficiency:</label>
+                        <select name="energy_efficiency" id="energy_efficiency" class="form-control" required>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                    <!-- Input field for heating method -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="heating_method">Heating Method:</label>
+                        <input type="text" name="heating_method" id="heating_method" class="form-control" required>
+                    </div>
+                    <!-- Input field for cooling method -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="cooling_method">Cooling Method:</label>
+                        <input type="text" name="cooling_method" id="cooling_method" class="form-control" required>
+                    </div>
+                    <!-- Input field for location -->
+                    <div class="form-group text" style="margin-bottom: 20px;">
+                        <label for="location">Location:</label>
+                        <input type="text" name="location" id="location" class="form-control" required>
+                    </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-4"></div>
+</div>
+{% endblock %}
