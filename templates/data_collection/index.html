@@ -35,6 +35,7 @@
             <th>Clothing Spend (USD)</th>
             <th>Waste Type</th>
             <th>Waste Amount (kg)</th>
+            <th>Action</th>
             <!-- Add more table headers for each field you want to display -->
           </tr>
         </thead>
@@ -51,6 +52,16 @@
             <td>{{ data.clothing_spent }}</td>
             <td>{{ data.waste_type }}</td>
             <td>{{ data.waste_weight }}</td>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Action
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" href="">Display</a>
+                  <a class="dropdown-item" href="">Delete</a>
+                </div>
+            </td>
             <!-- Add more table cells for each field you want to display -->
           </tr>
           {% endfor %}
@@ -59,6 +70,19 @@
       {% endif %}
       <!-- Add an else block to display display something else for the user -->
     </div>
+    </div>
+    <div class="container">
+      {% if not environmental_data %}
+        <p>No carbon footprint data available</p>
+      {% else %}
+        <ul>
+          {% for data in emission_data %}
+            <li>{{ "Boy oh boy" }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
 </div>
 
 {% endblock content %}

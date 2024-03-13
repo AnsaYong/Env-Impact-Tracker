@@ -3,19 +3,48 @@ from django.views import View
 from .models import CarbonFootprintData, EnvironmentData
 from django.contrib import messages
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
+from django.urls import reverse
+import requests
 
 
 class IndexView(View):
     """Provides a method that renders the index page."""
     def get(self, request):
-        environmental_data = EnvironmentData.objects.filter(user=request.user)
+        """Renders the index page. It passes variables to the index page
+        to display the user's environmental data and carbon footprint."""
+        user=request.user
 
-        context = {
-            'environmental_data': environmental_data
-        }
-        return render(request, 'data_collection/index.html', context)
-    
+        # To handle the case for existing users with environmental data
+        try:
+            # Get the current user's complete environmental data to display on the table
+            environmental_data = EnvironmentData.objects.filter(user=user)
+
+            # Get the most recent environmental data and use to get the most recent carbon footprint data to display on charts
+            env_data_for_emission = EnvironmentData.objects.filter(user=user).latest('date_entered')
+            if env_data_for_emission is not None:
+                # Make a request to the UserDataRetrievalView API to get the user's carbon footprint data
+                environment_data_id = env_data_for_emission.id
+                url = reverse('user_data', kwargs={'environment_data_id': environment_data_id})
+                response = requests.get(request.build_absolute_uri(url))
+                if response.status_code == 200:
+                    data = response.json()
+                else:
+                    data = None
+            else:
+                data = None
+
+            context = {
+                'environmental_data': environmental_data,
+                'emission_data': data,
+            }
+            return render(request, 'data_collection/index.html', context)
+        
+        # To handle the case for new users without environmental data
+        except EnvironmentData.DoesNotExist:
+            messages.info(request, "You have not submitted any environmental data.")
+            return render(request, 'data_collection/index.html')
+
 
 class EnvDataView(View):
     """Provides a method that renders the environmental data collection page."""
@@ -24,7 +53,8 @@ class EnvDataView(View):
         return render(request, 'data_collection/env_data.html')
     
     def post(self, request):
-        """Makes a call to the method that calculates the carbon footprint."""
+        """Makes a call to the method that calculates the carbon footprint from the
+        user's environmental data."""
 
         user = request.user
 
@@ -91,49 +121,59 @@ class EnvDataView(View):
 
 
 class UserDataRetrievalView(View):
-    """View to retrieve the user's environmental data and
-    carbonfootprint data from the database and prepare them
-    for display."""
+    """Creates an endpoint to retrieve the current user's most recent environmental and
+    carbon footprint datasets from the database and prepare them for display."""
 
-    def get(self, request):
-        """Retrieve and display user's data."""
-        user = request.user
-        environment_data = EnvironmentData.objects.filter(user=user).latest('date_entered')
-        carbon_footprint_data = CarbonFootprintData.objects.filter(user=user).latest('date_calculated')
+    def get(self, request, environment_data_id=None, user_id=None):
+        """Retrieve and display user's data.
+        
+        Arguments:
+            request -- the request object
+            environment_data_id -- the id of the environmental data to retrieve
+        """
 
-        # Check if environment_data and carbon_footprint_data are not None
-        if environment_data is None or carbon_footprint_data is None:
-            return JsonResponse({'error': 'Data not found'})
+        # Check if environment_data_id is not None
+        if environment_data_id is not None:
+            try:
+                environment_data = EnvironmentData.objects.get(id=environment_data_id)
+                carbon_footprint_data = CarbonFootprintData.objects.get(environment_data_id=environment_data_id)
+            except EnvironmentData.DoesNotExist:
+                return HttpResponseNotFound('The requested environmental data does not exist.')
+            except CarbonFootprintData.DoesNotExist:
+                return HttpResponseNotFound('The requested carbon footprint data does not exist.')
 
-        # Prepre the user's environmental impact data for Chart.js
-        env_data_summary = {
-            'labels': ['Energy', 'Transport', 'Consumer Goods', 'Waste', 'Water', 'Technology'],
-            'data': [
-                environment_data.energy_amount,
-                environment_data.transport_distance,
-                environment_data.clothing_spent + environment_data.food_bev_tob_spent + environment_data.paper_products_spent,
-                environment_data.waste_weight,
-                environment_data.water_supply_weight,
-                environment_data.cloud_computing_time + environment_data.personal_computing_time_spent,
-            ],
-        }
+            # Check if environment_data and carbon_footprint_data are not None
+            if environment_data is not None and carbon_footprint_data is not None:
+                # Prepare the data for JsonResponse
+                env_data_summary = {
+                    'labels': ['Energy', 'Transport', 'Consumer Goods', 'Waste', 'Water', 'Technology'],
+                    'data': [
+                        environment_data.energy_amount,
+                        environment_data.transport_distance,
+                        environment_data.clothing_spent + environment_data.food_bev_tob_spent + environment_data.paper_products_spent,
+                        environment_data.waste_weight,
+                        environment_data.water_supply_weight,
+                        environment_data.cloud_computing_time + environment_data.personal_computing_time_spent,
+                    ],
+                }
 
-        # Prepare the user's total carbon footprint data
-        total_carbon_footprint = {
-            'total_carbon_footprint': carbon_footprint_data.total_carbon_footprint,
-        }
+                total_carbon_footprint = {
+                    'total_carbon_footprint': carbon_footprint_data.total_carbon_footprint,
+                }
 
-        # Prepare the user's carbon footprint breakdown data for Chart.js
-        carbon_footprint = {
-            'Energy Footprint': carbon_footprint_data.energy_footprint,
-            'Transport Footprint': carbon_footprint_data.transport_footprint,
-            'Consumer Goods Footprint': carbon_footprint_data.consumer_goods_footprint,
-            'Waste Footprint': carbon_footprint_data.waste_footprint,
-            'Water Footprint': carbon_footprint_data.water_footprint,
-            'Technology Footprint': carbon_footprint_data.technology_footprint,
-        }
+                carbon_footprint = {
+                    'Energy Footprint': carbon_footprint_data.energy_footprint,
+                    'Transport Footprint': carbon_footprint_data.transport_footprint,
+                    'Consumer Goods Footprint': carbon_footprint_data.consumer_goods_footprint,
+                    'Waste Footprint': carbon_footprint_data.waste_footprint,
+                    'Water Footprint': carbon_footprint_data.water_footprint,
+                    'Technology Footprint': carbon_footprint_data.technology_footprint,
+                }
 
-        return JsonResponse({'env_data_summary': env_data_summary, 'carbon_footprint': carbon_footprint, 'total_carbon_footprint': total_carbon_footprint})
+                # Return the data as JsonResponse
+                return JsonResponse({'env_data_summary': env_data_summary, 'carbon_footprint': carbon_footprint, 'total_carbon_footprint': total_carbon_footprint}, status=200)
+
+        return HttpResponseNotFound('Data not found')
     
 
 class CarbonFootprintCalculator:
@@ -229,3 +269,35 @@ class CarbonFootprintCalculator:
 
         # Return a dictionary containing all individual footprints and the total footprint
         return {'individual_footprints': individual_footprints, 'total_carbon_footprint': total_carbon_footprint}
+
+
+
+class AnalyticsView(View):
+    """Provides a method that renders the analytics page."""
+    def get(self, request):
+        """Renders the analytics page. It passes variables to the analytics page
+        to display the user's environmental data and carbon footprint."""
+        user=request.user
+
+        # Get the current user's complete environmental data to display on the table
+        environmental_data = EnvironmentData.objects.filter(user=user)
+
+        # Get the most recent environmental data and use to get the most recent carbon footprint data to display on charts
+        env_data_for_emission = EnvironmentData.objects.filter(user=user).latest('date_entered')
+        if env_data_for_emission is not None:
+            # Make a request to the UserDataRetrievalView API to get the user's carbon footprint data
+            environment_data_id = env_data_for_emission.id
+            url = reverse('user_data', kwargs={'environment_data_id': environment_data_id})
+            response = requests.get(request.build_absolute_uri(url))
+            if response.status_code == 200:
+                data = response.json()
+            else:
+                data = None
+        else:
+            data = None
+
+        context = {
+            'environmental_data': environmental_data,
+            'emission_data': data,
+        }
+        return render(request, 'data_collection/analytics.html', context)

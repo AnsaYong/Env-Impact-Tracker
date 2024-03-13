@@ -143,8 +143,6 @@ class EnvironmentData(models.Model):
 
     def __str__(self):
         return f"Environmental Data for {self.user.username} on {self.date_entered}"
-
-# Path: data_collection/env_data.py
     
 
 
@@ -168,5 +166,3 @@ class CarbonFootprintData(models.Model):
 
     def __str__(self):
         return f"Carbon Footprint Data for {self.user.username} on {self.date_calculated}"
-    
-# Path: data_collection/views.py
