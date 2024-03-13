@@ -22,5 +22,4 @@ urlpatterns = [
     path('', include('pages.urls')),    # Should take the user straight to the landing page
     path('authentication/', include('authentication.urls')),    # The authentication app
     path('data_collection/', include('data_collection.urls')),  # The data_collection app
-    path('impact/', include('impact.urls')),    # The impact app
 ]

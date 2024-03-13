@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from validate_email import validate_email
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
-from impact.views import UserDataRetrievalView
 from django.http import HttpResponse
 
 
@@ -70,7 +69,7 @@ class RegistrationView(View):
                 request.session['new_user_email'] = email
 
                 # Redirect to a page for environmental data input
-                return redirect('energy_consumption')
+                return redirect('data_collection')
             else:
                 messages.error(request, 'Email is already in use')
                 return render(request, 'authentication/register.html')
@@ -99,10 +98,7 @@ class DashboardView(View):
             # Use the authenticated user
             user = request.user
 
-        # Get user data
-        user_data_retrieval_view = UserDataRetrievalView(user)
-        user_data = user_data_retrieval_view.store_user_data()  # Store user's data and retrieve it
-        return render(request, 'pages/dashboard.html', {'user_data': user_data})
+        return render(request, 'pages/dashboard.html')
     
 
 class LoginView(View):
@@ -118,8 +114,8 @@ class LoginView(View):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                messages.success(request, 'Welcome, ' + username + ' you are now logged in')
-                return redirect('dashboard')    # update this to redirect to the user's account
+                messages.success(request, 'Welcome, ' + username + '. You are now logged in.')
+                return redirect('data_collection')
             messages.error(request, 'Invalid login credentials')
         return render(request, 'authentication/login.html', {'error_message': 'Invalid login'})
     

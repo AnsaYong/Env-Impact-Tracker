@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Row 1: Image and Text -->
+    <div class="row">
+        <div class="col-md-4 bg-light p-3">
+            <h3>Welcome to Your Dashboard</h3>
+            <p>This is a brief description of your environmental impact.</p>
+            <p>Here are some useful links:</p>
+            <ul>
+                <li><a href="#">Link 1</a></li>
+                <li><a href="#">Link 2</a></li>
+                <li><a href="#">Link 3</a></li>
+            </ul>
+        </div>
+        <div class="col-md-8 bg-light p-3">
+            <img src="{% static 'img/placeholder.jpg' %}" alt="Placeholder Image" class="img-fluid">
+        </div>
+    </div>
+
+    <!-- Row 2: User Data Table -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Energy Consumption</th>
+                        <th>Food Consumption</th>
+                        <th>Transportation</th>
+                        <th>Waste Generation</th>
+                        <th>Waste Usage</th>
+                        <th>Shopping Habits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>100 kWh</td>
+                        <td>20 kg</td>
+                        <td>Bike</td>
+                        <td>20 l</td>
+                        <td>60 kg</td>
+                        <td>Daily</td>
+                    </tr>
+                    <tr>
+                        <td>50 kWh</td>
+                        <td>30 kg</td>
+                        <td>Car</td>
+                        <td>10 l</td>
+                        <td>45 kg</td>
+                        <td>Weekly</td>
+                    </tr>
+                    <!-- Add more rows for other categories -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Row 3: Placeholder -->
+    <div class="row mt-5">
+        <div class="col-md-12 bg-light p-3 text-center">
+            <p>This is a placeholder for future content or links.</p>
+        </div>
+    </div>
+
+    <!-- Row 4: Charts and Text -->
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <canvas id="pieChart" width="400" height="400"></canvas>
+        </div>
+        <div class="col-md-4">
+            <canvas id="barChart" width="400" height="400"></canvas>
+        </div>
+        <div class="col-md-4">
+
+
+
+            <h2>User Data</h2>
+            {% if user_data %}
+                <ul>
+                    {% for data in user_data %}
+                        <li>Energy Consumption: {{ data.energy_data }}</li>
+                        <li>Food Consumption: {{ data.food_data }}</li>
+                        <li>Transportation: {{ data.transportation_data }}</li>
+                        <li>Waste Generation: {{ data.waste_data }}</li>
+                        <li>Water Usage: {{ data.water_data }}</li>
+                        <li>Shopping Habits: {{ data.shopping_data }}</li>
+                        <li>Housing: {{ data.housing_data }}</li>
+                    {% empty %}
+                        <li>No data found</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No user data found</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Row 5: Footer -->
+    <div class="row mt-5">
+        <div class="col-md-12 bg-light text-center">
+            © 2024 Environmental Impact Tracker | <a href="#">Analytics home</a> | <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> | <a href="#">Send feedback</a>
+        </div>
+    </div>
+</div>
+
+<!-- Reference the JavaScript files -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'script/impact_chart.js' %}"></script>
+{% endblock content %}
+
+
+% the dashboard should automatically call the user's data from the database and display it in the table and in the charts.

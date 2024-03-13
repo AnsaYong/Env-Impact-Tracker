@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'data_collection' %}">Env data</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Add data</li>
+    </ol>
+  </nav>
+
+  <!-- Data collection form -->
+  <div class="card">
+    <form action="{% url 'env_data' %}" method="post">
+      {% csrf_token %}
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-2">
+          <!-- Energy -->
+          <div class="col-lg-6">
+            <div class="col mb-4">
+            <div class="card h-100">
+              <div class="card-body f-flex flex-column">
+                <h5 class="card-title"><strong>Energy</strong></h5>
+                <div class="form-group row">
+                  <label for="energy_source" class="col-sm-4 col-form-label">Source:</label>
+                  <div class="col-sm-8">
+                    <select id="energy_source" name="energy_source" class="form-control form-control-sm mb-1">
+                      <option value="electricity">Electricity</option>
+                      <option value="natural_gas">Natural Gas</option>
+                      <option value="fuel">Fuel</option>
+                    </select>
+                  </div>
+                  <label for="energy_amount" class="col-sm-4 col-form-label small-text">Amount:</label>
+                  <div class="col-sm-8">
+                    <input type="number" id="energy_amount" name="energy_amount" placeholder="Enter energy amount" required class="form-control mb-1">
+                  </div>
+                  <label for="energy_unit" class="col-sm-4 col-form-label small-text">Unit:</label>
+                  <div class="col-sm-8">
+                    <input type="text" id="energy_unit" name="energy_unit" placeholder="Enter energy unit" required class="form-control mb-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          <!-- Transport -->
+          <div class="col-lg-6">
+            <div class="col mb-4">
+              <div class="card h-100">
+                <div class="card-body f-flex flex-column">
+                <h5 class="card-title"><strong>Transport</strong></h5>
+                <div class="form-group row">
+                  <label for="transport_mode" class="col-sm-4 col-form-label">Mode:</label>
+                  <div class="col-sm-8">
+                    <select id="transport_mode" name="transport_mode" class="form-control form-control-sm mb-1">
+                      <option value="air_travel">Air Travel</option>
+                      <option value="rail_travel">Rail Travel</option>
+                      <option value="vehicle">Vehicle</option>
+                      <option value="freight">Freight</option>
+                    </select>
+                  </div>
+                  <label for="transport_passengers" class="col-sm-4 col-form-label">Passengers:</label>
+                  <div class="col-sm-8">
+                    <input type="number" id="transport_passengers" name="transport_passengers" placeholder="Enter number of passengers" required class="form-control form-control-sm mb-1">
+                  </div>
+                  <label for="transport_distance" class="col-sm-4 col-form-label">Distance:</label>
+                  <div class="col-sm-8">
+                    <input type="number" id="transport_distance" name="transport_distance" placeholder="Enter distance" required class="form-control form-control-sm mb-1">
+                  </div>
+                  <label for="transport_unit" class="col-sm-4 col-form-label">Unit:</label>
+                  <div class="col-sm-8">
+                    <input type="text" id="transport_unit" name="transport_unit" placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                  </div>
+                  <label for="transport_amount_spent" class="col-sm-4 col-form-label">Amount Spent:</label>
+                  <div class="col-sm-8">
+                    <input type="number" id="transport_amount_spent" name="transport_amount_spent" placeholder="Enter amount spent" required class="form-control form-control-sm mb-1">
+                  </div>
+                  <label for="transport_weight" class="col-sm-4 col-form-label">Weight:</label>
+                  <div class="col-sm-8">
+                    <input type="number" id="transport_weight" name="transport_weight" placeholder="Enter weight" required class="form-control form-control-sm mb-1">
+                  </div>
+                  <label for="transport_weight_unit" class="col-sm-4 col-form-label">Weight Unit:</label>
+                  <div class="col-sm-8">
+                    <input type="text" id="transport_weight_unit" name="transport_weight_unit" placeholder="Enter weight unit" required class="form-control form-control-sm mb-1">
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+          <!-- Consumer Goods -->
+          <div class="col-lg-6">
+            <div class="col mb-4">
+              <div class="card h-100">
+                <div class="card-body f-flex flex-column">
+                    <h5 class="card-title"><strong>Consumer Goods</strong></h5>
+                    <div class="form-group row">
+                        <label for="clothing_type" class="col-sm-4 col-form-label">Clothing Type:</label>
+                        <div class="col-sm-8">
+                            <select id="clothing_type" name="clothing_type" class="form-control form-control-sm mb-1">
+                                <option value="fur">Fur</option>
+                                <option value="leather">Leather</option>
+                            </select>
+                        </div>
+                        <label for="clothing_spent" class="col-sm-4 col-form-label small-text">Amount Spent:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="clothing_spent" name="clothing_spent" placeholder="Enter amount spent" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="clothing_unit" class="col-sm-4 col-form-label small-text">Unit:</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="clothing_unit" name="clothing_unit" placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="food_bev_tob_type" class="col-sm-4 col-form-label">Food and Beverage:</label>
+                        <div class="col-sm-8">
+                            <select id="food_bev_tob_type" name="food_bev_tob_type" class="form-control form-control-sm mb-1">
+                                <option value="dairy">Dairy</option>
+                                <option value="fish">Fish</option>
+                                <option value="meat">Meat</option>
+                                <option value="beverage">Beverage</option>
+                                <option value="sugar">Sugar</option>
+                            </select>
+                        </div>
+                        <label for="food_bev_tob_spent" class="col-sm-4 col-form-label small-text">Amount Spent:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="food_bev_tob_spent" name="food_bev_tob_spent" placeholder="Enter amount spent" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="food_bev_tob_unit " class="col-sm-4 col-form-label small-text">Unit:</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="food_bev_tob_unit " name="food_bev_tob_unit " placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="paper_product_type" class="col-sm-4 col-form-label">Paper products:</label>
+                        <div class="col-sm-8">
+                            <select id="paper_product_type" name="paper_product_type" class="form-control form-control-sm mb-1">
+                                <option value="paper">Paper</option>
+                                <option value="pulp">Pulp</option>
+                                <option value="paper_bags">Paper Bags</option>
+                                <option value="cardboard">Cardboard</option>
+                            </select>
+                        </div>
+                        <label for="paper_products_spent" class="col-sm-4 col-form-label small-text">Amount Spent:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="paper_products_spent" name="paper_products_spent" placeholder="Enter amount spent" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="paper_products_unit" class="col-sm-4 col-form-label small-text">Unit:</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="paper_products_unit" name="paper_products_unit" placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <!-- Add similar fields for other consumer goods -->
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waste -->
+          <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Waste</strong></h5>
+                    <div class="form-group row">
+                        <label for="waste_type" class="col-sm-4 col-form-label">Waste Type:</label>
+                        <div class="col-sm-8">
+                            <select id="waste_type" name="waste_type" class="form-control form-control-sm mb-1">
+                                <option value="construction_waste">Construction Waste</option>
+                                <option value="electrical_waste">Electrical Waste</option>
+                                <option value="food_organic_waste">Food/Organic Waste</option>
+                                <option value="glass_waste">Glass Waste</option>
+                                <option value="metal_waste">Metal Waste</option>
+                                <option value="plastic_waste">Plastic Waste</option>
+                                <!-- Add other waste options -->
+                            </select>
+                        </div>
+                        <label for="waste_weight" class="col-sm-4 col-form-label">Weight:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="waste_weight" name="waste_weight" placeholder="Enter weight" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="waste_unit" class="col-sm-4 col-form-label">Unit:</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="waste_unit" name="waste_unit" placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- Water -->
+          <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Water</strong></h5>
+                    <div class="form-group row">
+                        <label for="water_supply_weight" class="col-sm-4 col-form-label">Water Supply:</label>
+                        <div class="col-sm-8">
+                          <input type="number" id="water_supply_weight" name="water_supply_weight" placeholder="Enter weight" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="water_supply_unit" class="col-sm-4 col-form-label">Unit:</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="water_supply_unit" name="water_supply_unit" placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="water_treatment_volume" class="col-sm-4 col-form-label">Water Treatment:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="water_treatment_volume" name="water_treatment_volume" placeholder="Enter volume" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="water_treatment_unit" class="col-sm-4 col-form-label">Unit:</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="water_treatment_unit" name="water_treatment_unit" placeholder="Enter unit" required class="form-control form-control-sm mb-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- Technology -->
+          <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Technology</strong></h5>
+                    <div class="form-group row">
+                        <label for="cloud_computing_number" class="col-sm-4 col-form-label">Cloud Computing:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="cloud_computing_number" name="cloud_computing_number" placeholder="Enter number of platforms" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="cloud_computing_time" class="col-sm-4 col-form-label">Time spent:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="cloud_computing_time" name="cloud_computing_time" placeholder="Enter time spent" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="computing_time_unit" class="col-sm-4 col-form-label">Unit:</label>
+                        <div class="col-sm-8">
+                            <select id="computing_time_unit" name="computing_time_unit" class="form-control form-control-sm mb-1">
+                                <option value="hours">Hours</option>
+                                <option value="days">Days</option>
+                                <option value="months">Months</option>
+                                <option value="years">Years</option>
+                            </select>
+                        </div>
+                        <label for="networking_data_transferred" class="col-sm-4 col-form-label">Data Transferred:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="networking_data_transferred" name="networking_data_transferred" placeholder="Enter networking data transferred" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="networking_data_unit" class="col-sm-4 col-form-label">Unit:</label>
+                        <div class="col-sm-8">
+                            <select id="networking_data_unit" name="networking_data_unit" class="form-control form-control-sm mb-1">
+                                <option value="GB">Gigabytes</option>
+                                <option value="TB">Terabytes</option>
+                                <option value="PB">Petabytes</option>
+                            </select>
+                        </div>
+                        <label for="personal_computing_time_spent" class="col-sm-4 col-form-label">Personal Computing:</label>
+                        <div class="col-sm-8">
+                            <input type="number" id="personal_computing_time_spent" name="personal_computing_time_spent" placeholder="Enter personal computing time spent" required class="form-control form-control-sm mb-1">
+                        </div>
+                        <label for="personal_computing_unit" class="col-sm-4 col-form-label">Personal Computing Unit:</label>
+                        <div class="col-sm-8">
+                            <select id="personal_computing_unit" name="personal_computing_unit" class="form-control form-control-sm mb-1">
+                                <option value="hours">Hours</option>
+                                <option value="days">Days</option>
+                                <option value="months">Months</option>
+                                <option value="years">Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

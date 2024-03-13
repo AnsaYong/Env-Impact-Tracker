@@ -1,0 +1,64 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div class="container mt-4">
+    <div class = "row">
+      <div class = "col-md-10">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="">Environmental data</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">My data</li>
+          </ol>
+        </nav> 
+      </div>
+  
+      <!-- Link to add environmental data page -->
+      <div class = "col-md-2">
+        <a href="{% url 'env_data' %}" class="btn btn-primary">Add Data</a>
+      </div>
+    </div>
+
+    <div class="container">
+    {% include 'partials/_messages.html' %}
+      <!-- Check if the current user has stored environmental data -->
+      {% if environmental_data.count %}
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Date Entered</th>
+            <th>Energy Source</th>
+            <th>Energy Amount (kWh)</th>
+            <th>Transport Mode</th>
+            <th>Transport Distance (km)</th>
+            <th>Clothing Type</th>
+            <th>Clothing Spend (USD)</th>
+            <th>Waste Type</th>
+            <th>Waste Amount (kg)</th>
+            <!-- Add more table headers for each field you want to display -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loop through the data and display each row in the table if the data has stored values-->
+          {% for data in environmental_data %}
+          <tr>
+            <td>{{ data.date_entered }}</td>
+            <td>{{ data.energy_source }}</td>
+            <td>{{ data.energy_amount }}</td>
+            <td>{{ data.transport_mode }}</td>
+            <td>{{ data.transport_distance }}</td>
+            <td>{{ data.clothing_type }}</td>
+            <td>{{ data.clothing_spent }}</td>
+            <td>{{ data.waste_type }}</td>
+            <td>{{ data.waste_weight }}</td>
+            <!-- Add more table cells for each field you want to display -->
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+      <!-- Add an else block to display display something else for the user -->
+    </div>
+</div>
+
+{% endblock content %}
