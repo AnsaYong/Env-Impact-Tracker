@@ -75,3 +75,22 @@
     display: block !important;
   }
   
+
+  .table thead th {
+    border-top: 2px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .table tbody tr:last-child {
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .table tbody tr td:not(:last-child) {
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  ul {
+    text-align: center;
+    padding-left: 0;
+    list-style-position: inside ;
+  }

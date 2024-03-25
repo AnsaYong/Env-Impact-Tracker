@@ -1,14 +1,16 @@
+<!-- register.html -->
 {% extends 'base_auth.html' %}
 {% load static %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-4"></div>
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="col-md-4">
-        <div class="card mt-5">
+        <div class="card mt-5 bg-light">
             <div class="card-body">
-                <div class="card-title py-3">
-                    <h5>Register for a free account</h5>
+                <div class="card-title text-center mb-4">
+                    <a>
+                        <img src="{% static 'img/logo1.png' %}" alt="Brand Logo" class="logo me-2" style="max-height: 50px; border-radius: 80%;">
+                    </a>
                 </div>
 
                 <!-- Form -->
@@ -47,14 +49,19 @@
                         />
                         <small style='display:block; cursor:pointer;' class="text-end py-3 showPasswordToggle">SHOW</small>
                     </div>
-                    <!-- Register button -->
-                    <button type="submit" value="Register" class="btn btn-block btn-bd-primary submit-btn">Register</button>
+                    <!-- Register and back button -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" value="Register" class="btn btn-block btn-bd-primary submit-btn">Register</button>
+                        <button type="button" onclick="window.location.href = '{% url 'landing' %}'" class="btn btn-block btn-bd-primary">Back</button>
+                    </div>
                 </form>
+                <!-- Message for existing users -->
+                <div class="text-center py-3">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-md-4"></div>
 </div>
 
 <script src="{% static 'script/register.js' %}"></script>

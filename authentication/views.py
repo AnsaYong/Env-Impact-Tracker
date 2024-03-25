@@ -9,39 +9,38 @@ from django.contrib.auth import logout, login, authenticate
 from django.http import HttpResponse
 
 
-class EmailValidationView(View):
-    """Provides a method that validates the email provided by the user"""
-    def post(self, request):
-        data = json.loads(request.body)
-        email = data['email']
-        # Check if email is valid
-        if not validate_email(email):
-            return JsonResponse({'email_error':'Email is invalid'}, status=400)
-        # Check if email is taken
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({'email_error':'Sorry email in use. Please choose another one'}, status=409)
-        return JsonResponse({'email_valid': True})
-
-
-class UsernameValidationView(View):
-    """Provides a method that validates the username provided by the user"""
-    def post(self, request):
-        data = json.loads(request.body)
-        username = data['username']
-        # Check if username is valid
-        if not str(username).isalnum():
-            return JsonResponse({'username_error':'Username should only contain alphanumeric characters'}, status=400)
-        # Check if username is taken
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({'username_error':'Sorry username in use. Please choose another one'}, status=409)
-        return JsonResponse({'username_valid': True})
-
 class RegistrationView(View):
+    """
+    View for handling user registration.
+
+    Methods:
+    - get(self, request): Renders the registration page.
+    - post(self, request): Handles the registration form submission.
+    """
+
     def get(self, request):
+        """
+        Renders the registration page.
+
+        Args:
+        - request: The HTTP request object.
+
+        Returns:
+        - HttpResponse: The rendered registration page.
+        """
         return render(request, 'authentication/register.html')
     
     def post(self, request):
-        # Get user data
+        """
+        Handles the registration form submission.
+
+        Args:
+        - request: The HTTP request object.
+
+        Returns:
+        - HttpResponse: Redirects to 'data_collection' if registration is successful,
+                        otherwise renders the registration page with appropriate error messages.
+        """
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
@@ -68,17 +67,145 @@ class RegistrationView(View):
                 request.session['new_user_username'] = username
                 request.session['new_user_email'] = email
 
-                # Redirect to a page for environmental data input
+                # Redirect to dashboard for environmental data input
                 return redirect('data_collection')
             else:
                 messages.error(request, 'Email is already in use')
                 return render(request, 'authentication/register.html')
 
-        # Validate user data
-        
-        # Create user account
-        
+        # Username already exists
+        messages.error(request, 'Username is already taken')
         return render(request, 'authentication/register.html')
+
+
+class EmailValidationView(View):
+    """
+    View for validating the email provided by the user.
+
+    Methods:
+    - post(self, request): Validates the email provided by the user and returns a JsonResponse.
+    """
+
+    def post(self, request):
+        """
+        Validates the email provided by the user and returns a JsonResponse.
+
+        Args:
+        - request: The HTTP request object containing the email to be validated.
+
+        Returns:
+        - JsonResponse: JSON response indicating the result of the email validation.
+        """
+        data = json.loads(request.body)
+        email = data['email']
+        # Check if email is valid
+        if not validate_email(email):
+            return JsonResponse({'email_error':'Email is invalid'}, status=400)
+        # Check if email is taken
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'email_error':'Sorry email in use. Please choose another one'}, status=409)
+        return JsonResponse({'email_valid': True})
+
+
+class UsernameValidationView(View):
+    """
+    View for validating the username provided by the user.
+
+    Methods:
+    - post(self, request): Validates the username provided by the user and returns a JsonResponse.
+    """
+
+    def post(self, request):
+        """
+        Validates the username provided by the user and returns a JsonResponse.
+
+        Args:
+        - request: The HTTP request object containing the username to be validated.
+
+        Returns:
+        - JsonResponse: JSON response indicating the result of the username validation.
+        """
+        data = json.loads(request.body)
+        username = data['username']
+        # Check if username is valid
+        if not str(username).isalnum():
+            return JsonResponse({'username_error':'Username should only contain alphanumeric characters'}, status=400)
+        # Check if username is taken
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'username_error':'Sorry username in use. Please choose another one'}, status=409)
+        return JsonResponse({'username_valid': True})
+
+
+class LoginView(View):
+    """
+    View for handling user login. If login is successfull, the user is redirected to
+    the data collection page.
+
+    Methods:
+    - get(self, request): Renders the login page.
+    - post(self, request): Handles the login form submission.
+    """
+
+    def get(self, request):
+        """
+        Renders the login page.
+
+        Args:
+        - request: The HTTP request object.
+
+        Returns:
+        - HttpResponse: The rendered login page.
+        """
+        return render(request, 'authentication/login.html')
+
+    def post(self, request):
+        """
+        Handles the login form submission.
+
+        Args:
+        - request: The HTTP request object.
+
+        Returns:
+        - HttpResponse: Redirects to 'data_collection' if login is successful,
+                        otherwise renders the login page with an error message.
+        """
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Validate user data
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, 'Welcome, ' + username + '. You are now logged in.')
+                return redirect('data_collection')
+        messages.error(request, 'Invalid login credentials')
+        return render(request, 'authentication/login.html', {'error_message': 'Invalid login'})
+
+
+class LogoutView(View):
+    """
+    View for handling user logout.
+
+    Methods:
+    - get(self, request): Logs out the user and redirects to the landing page.
+    """
+
+    def get(self, request):
+        """
+        Logs out the user and redirects to the landing page.
+
+        Args:
+        - request: The HTTP request object.
+
+        Returns:
+        - HttpResponseRedirect: Redirects to the landing page.
+        """
+        logout(request)
+        messages.success(request, 'You have been logged out successfully.')
+        # Redirect to the landing page after logout
+        return redirect('landing')
+
 
 class DashboardView(View):
     def get(self, request):
@@ -100,28 +227,3 @@ class DashboardView(View):
 
         return render(request, 'pages/dashboard.html')
     
-
-class LoginView(View):
-    def get(self, request):
-        return render(request, 'authentication/login.html')
-    
-    def post(self, request):
-        username = request.POST['username']
-        password = request.POST['password']
-
-        # Validate user data
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                messages.success(request, 'Welcome, ' + username + '. You are now logged in.')
-                return redirect('data_collection')
-            messages.error(request, 'Invalid login credentials')
-        return render(request, 'authentication/login.html', {'error_message': 'Invalid login'})
-    
-class LogoutView(View):
-    def get(self, request):
-        logout(request)
-        messages.success(request, 'You have been logged out successfully.')
-        # Redirect to the landing page after logout
-        return redirect('landing')

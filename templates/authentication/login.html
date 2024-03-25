@@ -3,13 +3,14 @@
 {% load static %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-4"></div>
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="col-md-4">
-        <div class="card mt-5">
+        <div class="card mt-5 bg-light">
             <div class="card-body">
-                <div class="card-title py-3">
-                    <h5>Login to your account</h5>
+                <div class="card-title text-center mb-4">
+                    <a>
+                        <img src="{% static 'img/logo1.png' %}" alt="Brand Logo" class="logo me-2" style="max-height: 50px; border-radius: 80%;">
+                    </a>
                 </div>
 
                 <!-- Form -->
@@ -37,8 +38,11 @@
                         />
                         <small style='display:block; cursor:pointer;' class="text-end py-3 showPasswordToggle">SHOW</small>
                     </div>
-                    <!-- Login button -->
-                    <button type="submit" value="Login" class="btn btn-block btn-bd-primary submit-btn">Login</button>
+                    <!-- Login button and Back button -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" value="Login" class="btn btn-block btn-bd-primary submit-btn">Login</button>
+                        <button type="button" onclick="window.location.href = '{% url 'landing' %}'" class="btn btn-block btn-bd-primary">Back</button>
+                    </div>
                 </form>
 
                 <!-- Message for new users -->
@@ -48,8 +52,6 @@
             </div>
         </div>
     </div>
-</div>
-<div class="col-md-4"></div>
 </div>
 
 <script src="{% static 'script/register.js' %}"></script>

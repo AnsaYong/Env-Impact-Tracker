@@ -1,35 +1,68 @@
 <!DOCTYPE html>
+{% load static %} 
 <html>
 <head>
-    <title>My Website</title>
+    <title>EI Tracker</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header, section, footer {
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: green;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Website</h1>
-        <nav>
-            <ul>
-                <li><a href="{% url 'register' %}">Register</a>
-                <li><a href="{% url 'login' %}">Login</a></li>
-                <li><a href="/about">About</a></li> 
-            </ul>
-        </nav>
-    </header>
-    <main>
+    <a href="https://ansayong.github.io/" class="home-button">HOME</a>
+    <div class="content">
+        <header>
+            <img src="{% static 'img/banner2.png' %}" alt="Large Image">
+            <h1>Welcome</h1>
+            <a href="{% url 'register' %}" class="button">Create your account</a>
+        </header>
+        
         <section>
-            <h2>About Us</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p>Already have an account?</p>
+            <a href="{% url 'login' %}" style="color: green;">Sign in here</a>
         </section>
-        <section>
-            <h2>Why Choose Us</h2>
-            <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </section>
-        <section>
-            <h2>Contact Us</h2>
-            <p>Email: info@example.com</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 My Website. All rights reserved.</p>
-    </footer>
+    </div>
 </body>
 </html>

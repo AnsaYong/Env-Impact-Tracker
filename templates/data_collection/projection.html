@@ -1,0 +1,95 @@
+{% extends 'base.html' %} 
+
+{% load static %}
+
+{% block content %}
+
+<!-- Pass the user id to analytics.js file -->
+<script>
+    const user_id = "{{ request.user.id }}";
+</script>
+
+<div class="container mt-4">
+    <div class="row">
+      <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="">Environmental data</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">My projections</li>
+          </ol>
+        </nav>
+    </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="row mt-4">
+            <!-- Histogram showing weekly environmental data -->
+            <div class="col-lg-6">
+                <p>Your weekly environmental data:</p>
+                <div class="chart-container">
+                    <canvas id="envDataChart"></canvas>
+                </div>
+            </div>
+            <!-- Line chart showing weekly carbon footprint data -->
+            <div class="col-lg-6">
+                <p>Your weekly carbon emission data:</p>
+                <div class="chart-container">
+                    <canvas id="cfDataChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 text-center">
+            <!-- Display the highest contributors to the carbon footprint -->
+            <h4>Highest Contributors to Carbon Footprint</h4>
+            <ul>
+                {% for contributor, value in data.highest_contributors %}
+                <li>{{ contributor }}: {{ value|floatformat:1 }} kg CO2e</li>
+                {% endfor %}
+            </ul>
+
+            <p>"Your predicted environmental data and carbon footprint are shown above. Use this data to make informed decisions and reduce your carbon footprint."</p>
+            
+            <!-- Display the predictions for the next week -->
+            <h4>Predictions for Next Week</h4>
+            <h5>Environmental Data:</h5>
+            <ul>
+                <li>Total Energy: {{ data.next_week_env.total_energy|floatformat:1 }} kWh</li>
+                <li>Total Distance: {{ data.next_week_env.total_distance|floatformat:1 }} km</li>
+                <li>Total Waste: {{ data.next_week_env.total_waste|floatformat:1 }} kg</li>
+                <li>Total Technology: {{ data.next_week_env.total_technology|floatformat:1 }} GB</li>
+            </ul>
+            <h5>Carbon Footprint Data:</h5>
+            <ul>
+                <li>Total Carbon Footprint: {{ data.next_week_cf.total_carbon_footprint|floatformat:1 }} kg CO2e</li>
+                <li>Energy Footprint: {{ data.next_week_cf.energy_footprint|floatformat:1 }} kg CO2e</li>
+                <li>Transport Footprint: {{ data.next_week_cf.transport_footprint|floatformat:1 }} kg CO2e</li>
+                <li>Consumer Goods Footprint: {{ data.next_week_cf.consumer_goods_footprint|floatformat:1 }} kg CO2e</li>
+                <li>Waste Footprint: {{ data.next_week_cf.waste_footprint|floatformat:1 }} kg CO2e</li>
+                <li>Water Footprint: {{ data.next_week_cf.water_footprint|floatformat:1 }} kg CO2e</li>
+                <li>Technology Footprint: {{ data.next_week_cf.technology_footprint|floatformat:1 }} kg CO2e</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="row mt-4"></div>
+
+    <div class="row mt-4 text-center">
+        <p>"At the heart of sustainability lies informed action. Use this data to drive positive change."</p>
+    </div>
+    </div>
+    <footer class="footer mt-4 mb-3">
+        <div class="container">
+            <span class="text-muted">© EI Tracker 2024. All rights reserved.</span>
+        </div>
+    </footer>
+</div>
+</div>
+
+<script src="{% static 'script/projections.js' %}"></script>
+
+{% endblock content %}
