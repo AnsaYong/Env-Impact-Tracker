@@ -3,12 +3,6 @@
 
 {% block content %}
 
-<!-- Pass the most recent env data id to the index.js file -->
-<script>
-  const env_data_id = "{{ data_id }}";
-</script>
-
-
 <div class="container mt-4">
   <div class="row">
     <div class="col-md-10">
@@ -47,11 +41,9 @@
           <th>Waste</th>
           <th>Amount (kg)</th>
           <th>Action</th>
-          <!-- Add more table headers for each field you want to display -->
         </tr>
       </thead>
       <tbody>
-        <!-- Loop through the data and display each row in the table if the data has stored values-->
         {% for data in environmental_data %}
         <tr>
           <td>{{ data.date_entered|date:"DATE_FORMAT" }}</td>
@@ -65,9 +57,9 @@
           <td>{{ data.waste_weight }}</td>
           <td>
             <a href="{% url 'display_data' data.id %}" class="btn btn-secondary btn-sm">Display</a>
-            <a href="{% url 'delete_data' data.id %}" class="btn btn-secondary btn-sm">Delete</a>
+            <input type="hidden" id="delete-url" value="{% url 'delete_data' data.id %}">
+            <button class="btn btn-secondary btn-sm delete-btn" data-id="{{ data.id }}">Delete</button>
           </td>
-          <!-- Add more table cells for each field you want to display -->
         </tr>
         {% endfor %}
       </tbody>
@@ -75,153 +67,160 @@
     {% endif %}
     <!-- END TABLE -->
 
-    <!-- Add an else block to display something else for the user -->
-
+    {% if environmental_data.count %}
     <div class="row mt-2">
       <!-- Chart and text showing the user's emission data -->
       <p>Here's how your behavior impacts the environment.</p>
       <div class="col-lg-8">
-          <div class="chart-container" style="height: 400px;">
-              <canvas id="bar1Chart"></canvas>
-          </div>
+        <div class="chart-container" style="height: 400px;">
+          <canvas id="bar1Chart"></canvas>
+        </div>
       </div>
-  
+
       <!-- Card and text showing the user's carbon footprint -->
       <div class="col-lg-4 d-flex align-items-center">
         <div class="col mt-1 mb-4 text-center">
-            <h5 class="fw-bold fs-5 mb-1">Your Carbon Footprint</h5>
-            <p class="text-center mb-2">{{ emission_data.total_carbon_footprint.total_carbon_footprint|floatformat:"2" }}t CO2e</p>
-            <div class="circle bg-{% if emission_data.total_carbon_footprint.total_carbon_footprint > 100 %}danger{% else %}success{% endif %} d-flex justify-content-center align-items-center mx-auto" style="width: 100px; height: 100px; border-radius: 50%;">
-                <p class="text-white fs-6 m-0">{% if emission_data.total_carbon_footprint.total_carbon_footprint > 100 %}High{% else %}Low{% endif %}</p>
-            </div>
-            <p class="text-center mt-2" style="line-height: 1.5; font-size: 1.2rem;">
-              Your carbon footprint represents a combination of carbon emissions from all your individual activities. 
-              A high value negatively impacts the environment. 
-              Always aim to keep your carbon emission low.
+          <h5 class="fw-bold fs-5 mb-1">Your Carbon Footprint</h5>
+          <p class="text-center mb-2">{{ emission_data.total_carbon_footprint.total_carbon_footprint|floatformat:"2" }}t CO2e</p>
+          <div class="circle bg-{% if emission_data.total_carbon_footprint.total_carbon_footprint > 100 %}danger{% else %}success{% endif %} d-flex justify-content-center align-items-center mx-auto" style="width: 100px; height: 100px; border-radius: 50%;">
+            <p class="text-white fs-6 m-0">{% if emission_data.total_carbon_footprint.total_carbon_footprint > 100 %}High{% else %}Low{% endif %}</p>
+          </div>
+          <p class="text-center mt-2" style="line-height: 1.5; font-size: 1.2rem;">
+            Your carbon footprint represents a combination of carbon emissions from all your individual activities.
+            A high value negatively impacts the environment.
+            Always aim to keep your carbon emission low.
           </p>
         </div>
-    </div>
-    
       </div>
+    </div>
+    {% endif %}
 
-      <div class="row mt-4">
-        <!-- Text about practicing good daily habits -->
-        <div class="col-lg-3">
-            <div class="col text-center">
-                <h5 class="fw-bold fs-5 mb-3">Good Daily Habits</h5>
-                <h6>Practice good daily habits for your environment and health</h6>
-            </div>
-            </div>
-            <div class="col-lg-8 text-center">
-                <div class="d-flex justify-content-between align-items-center" style="height: 100px;">
-                    <div>
-                        <i class="bi bi-bicycle fs-3 align-items-center"></i>
-                        <p>Bicycle</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-droplet fs-3"></i>
-                        <p>Water</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-ban fs-3"></i>
-                        <p>No Smoking</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-globe fs-3"></i>
-                        <p>Global Awareness</p>
-                    </div>
-                </div>
-            </div>
+    {% if environmental_data.count %}
+    <div class="row mt-4">
+      <!-- Text about practicing good daily habits -->
+      <div class="col-lg-3">
+        <div class="col text-center">
+          <h5 class="fw-bold fs-5 mb-3">Good Daily Habits</h5>
+          <h6>Practice good daily habits for your environment and health</h6>
         </div>
-  
-      <div class="row mt-2">
+      </div>
+      <div class="col-lg-8 text-center">
+        <div class="d-flex justify-content-between align-items-center" style="height: 100px;">
+          <div>
+            <i class="bi bi-bicycle fs-3 align-items-center"></i>
+            <p>Bicycle</p>
+          </div>
+          <div>
+            <i class="bi bi-droplet fs-3"></i>
+            <p>Water</p>
+          </div>
+          <div>
+            <i class="bi bi-ban fs-3"></i>
+            <p>No Smoking</p>
+          </div>
+          <div>
+            <i class="bi bi-globe fs-3"></i>
+            <p>Global Awareness</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+
+    {% if environmental_data.count %}
+    <div class="row mt-2">
       <!-- Chart and text showing the user's carbon footprint breakdown -->
       <div class="col-lg-4">
-          <div class="chart-container">
-              <canvas id="doughnut1Chart"></canvas>
-          </div>
+        <div class="chart-container">
+          <canvas id="doughnut1Chart"></canvas>
+        </div>
       </div>
 
       <!-- Pie chart and text showing the user's carbon footprint breakdown -->
       <div class="col-lg-4">
-          <div class="chart-container">
-              <canvas id="emmDataChart"></canvas>
-          </div>
+        <div class="chart-container">
+          <canvas id="emmDataChart"></canvas>
+        </div>
       </div>
 
       <!-- Pie chart and text showing the user's environmental data -->
       <div class="col-lg-4">
         <div class="chart" style="height: 0; padding-bottom: 100%; position: relative;">
-            <canvas id="envDataChart"></canvas>
+          <canvas id="envDataChart"></canvas>
         </div>
+      </div>
     </div>
+    {% endif %}
 
-      
-  </div>
-  
-  <div class="row mt-4 mb-4">
+    <div class="row mt-4 mb-4">
       <!-- Some useful links -->
       <div class="col-lg-6">
         <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Here are some useful links on carbon footprint</h5>
-              <div class="container">
-                  <ul>
-                    <li><a href="https://www.conservation.org/stories/what-is-a-carbon-footprint">What is a Carbon Footprint?</a></li>
-                    <li><a href="https://www.repsol.com/en/sustainability/sustainability-pillars/climate-change/reducing-carbon-footprint/index.cshtml">Why is Carbon Footprint Important?</a></li>
-                    <li><a href="https://www.footprintnetwork.org/our-work/climate-change/">Climate Change & the Carbon Footprint</a></li>
-                    <li><a href="https://css.umich.edu/publications/factsheets/sustainability-indicators/carbon-footprint-factsheet">Carbon Footprint Factsheet</a></li>
-                    <li><a href="https://www.nature.org/en-us/get-involved/how-to-help/carbon-footprint-calculator/">Carbon Footprint Calculator</a></li>
-                    <li><a href="https://tracextech.com/carbon-footprint-importance-in-climate-change/">Importance of Carbon Footprint in Climate Change</a></li>
-                    <li><a href="https://populationconnection.org/resources/population-and-climate/">The Connection Between Population & Climate Change</a></li>
-                    <li><a href="https://www.europarl.europa.eu/topics/en/article/20190926STO62270/what-is-carbon-neutrality-and-how-can-it-be-achieved-by-2050">Carbon Neutrality</a></li>
-                    <li><a href="https://royalsociety.org/news-resources/projects/climate-change-evidence-causes/basics-of-climate-change/">Climate Change: Evidence and Cause</a></li>
-                    <li><a href="https://ourworldindata.org/emissions-by-sector">Emissions by sector: where do greenhouse gases come from?</a></li>
-                  </ul>
-                </div>
+          <div class="card-body">
+            <h5 class="card-title">Here are some useful links on carbon footprint</h5>
+            <div class="container">
+              <ul>
+                <li><a href="https://www.conservation.org/stories/what-is-a-carbon-footprint">What is a Carbon Footprint?</a></li>
+                <li><a href="https://www.repsol.com/en/sustainability/sustainability-pillars/climate-change/reducing-carbon-footprint/index.cshtml">Why is Carbon Footprint Important?</a></li>
+                <li><a href="https://www.footprintnetwork.org/our-work/climate-change/">Climate Change & the Carbon Footprint</a></li>
+                <li><a href="https://css.umich.edu/publications/factsheets/sustainability-indicators/carbon-footprint-factsheet">Carbon Footprint Factsheet</a></li>
+                <li><a href="https://www.nature.org/en-us/get-involved/how-to-help/carbon-footprint-calculator/">Carbon Footprint Calculator</a></li>
+                <li><a href="https://tracextech.com/carbon-footprint-importance-in-climate-change/">Importance of Carbon Footprint in Climate Change</a></li>
+                <li><a href="https://populationconnection.org/resources/population-and-climate/">The Connection Between Population & Climate Change</a></li>
+                <li><a href="https://www.europarl.europa.eu/topics/en/article/20190926STO62270/what-is-carbon-neutrality-and-how-can-it-be-achieved-by-2050">Carbon Neutrality</a></li>
+                <li><a href="https://royalsociety.org/news-resources/projects/climate-change-evidence-causes/basics-of-climate-change/">Climate Change: Evidence and Cause</a></li>
+                <li><a href="https://ourworldindata.org/emissions-by-sector">Emissions by sector: where do greenhouse gases come from?</a></li>
+              </ul>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Card for useful tips to reduce carbon footprint -->
-    <div class="col-lg-6">
-      <div class="card">
+      <!-- Card for useful tips to reduce carbon footprint -->
+      <div class="col-lg-6">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title">Some tips for protecting the environment</h5>
             <div class="container">
-                <ol>
-                  <li>Freeze leftovers, take-away food and fresh products</li>
-                  <li>Use food waste as fertilizer</li>
-                  <li>Turn off the lights</li>
-                  <li>Fill up your washing machine and forget the clothes dryer</li>
-                  <li>Don't waste water. Spend less than five or ten minutes showering</li>
-                  <li>Buy products with little packaging</li>
-                  <li>Use a bicycle or public transport</li>
-                  <li>Plant trees</li>
-                  <li>Put down carpets to keep the house warm</li>
-                  <li>Avoid preheating the oven unless it is essential</li>
-                </ol>
-              </div>
+              <ol>
+                <li>Freeze leftovers, take-away food and fresh products</li>
+                <li>Use food waste as fertilizer</li>
+                <li>Turn off the lights</li>
+                <li>Fill up your washing machine and forget the clothes dryer</li>
+                <li>Don't waste water. Spend less than five or ten minutes showering</li>
+                <li>Buy products with little packaging</li>
+                <li>Use a bicycle or public transport</li>
+                <li>Plant trees</li>
+                <li>Put down carpets to keep the house warm</li>
+                <li>Avoid preheating the oven unless it is essential</li>
+              </ol>
+            </div>
           </div>
+        </div>
       </div>
-  </div>
-  </div>
+    </div>
 
-  <div class="row mt-4"></div>
+    <div class="row mt-4"></div>
 
-  <div class="row mt-4 text-center">
-    <p>"At the heart of sustainability lies informed action. Use this data to drive positive change."</p>
-  </div>
+    <div class="row mt-4 text-center">
+      <p>"At the heart of sustainability lies informed action. Use this data to drive positive change."</p>
+    </div>
 
   </div>
 
   <footer class="footer mt-4 mb-3">
     <div class="container">
-        <span class="text-muted">© EI Tracker 2024. All rights reserved.</span>
+      <span class="text-muted">© EI Tracker 2024. All rights reserved.</span>
     </div>
-</footer>
+  </footer>
 </div>
 
+<!-- Pass the most recent env data id to the index.js file -->
+<script>
+  const env_data_id = "{{ data_id }}";
+</script>
 <script src="{% static 'script/index.js' %}"></script>
+<script src="{% static 'script/delete_data.js' %}"></script>
 
 {% endblock content %}

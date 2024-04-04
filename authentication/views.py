@@ -9,6 +9,8 @@ from django.contrib.auth import logout, login, authenticate
 from django.http import HttpResponse
 
 
+from django.contrib.auth import authenticate, login
+
 class RegistrationView(View):
     """
     View for handling user registration.
@@ -63,12 +65,15 @@ class RegistrationView(View):
 
                 messages.success(request, 'Account successfully created')
 
-                # Store user data in the session
-                request.session['new_user_username'] = username
-                request.session['new_user_email'] = email
-
-                # Redirect to dashboard for environmental data input
-                return redirect('data_collection')
+                # Log in the user
+                user = authenticate(username=username, password=password)
+                if user:
+                    login(request, user)
+                    messages.success(request, 'You are now logged in.')
+                    return redirect('data_collection')
+                else:
+                    messages.error(request, 'Failed to log in. Please try again.')
+                    return redirect('login')
             else:
                 messages.error(request, 'Email is already in use')
                 return render(request, 'authentication/register.html')

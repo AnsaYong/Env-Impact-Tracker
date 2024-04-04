@@ -10,139 +10,140 @@
 </script>
 
 <div class="container mt-4">
-    <div class="row">
-      <div class="col-md-12">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-              <a href="">Environmental data</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">My analytics</li>
-          </ol>
-        </nav>
-      </div>
+  <div class="row">
+    <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="">Environmental data</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">My analytics</li>
+        </ol>
+      </nav>
     </div>
-  
-    <div class="container">
-  
-      {% include 'partials/_messages.html' %}
-  
-      <!-- TABLE -->
-      {% if environmental_data.count %}
-      <p>Below is a summary of your environmental data, highlighting key values and characteristics.</p>
-      <table class="table table-striped table-hover mb-4">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Energy</th>
-            <th>Amount (kWh)</th>
-            <th>Transportation</th>
-            <th>Distance (km)</th>
-            <th>Clothing</th>
-            <th>Cost (USD)</th>
-            <th>Waste</th>
-            <th>Amount (kg)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Loop through the data and display each row in the table if the data has stored values-->
-          {% for data in environmental_data %}
-          <tr>
-            <td>{{ data.date_entered|date:"DATE_FORMAT" }}</td>
-            <td>{{ data.energy_source|title }}</td>
-            <td>{{ data.energy_amount }}</td>
-            <td>{{ data.transport_mode|title }}</td>
-            <td>{{ data.transport_distance }}</td>
-            <td>{{ data.clothing_type|title }}</td>
-            <td>{{ data.clothing_spent }}</td>
-            <td>{{ data.waste_type|title }}</td>
-            <td>{{ data.waste_weight }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
-      <!-- END TABLE -->
-  
-      <div class="row mt-4 mb-4">
-        <!-- Histogram showing cumulative environmental data -->
-        <div class="col-lg-8">
-          <p>Here is a summary of your weekly environmental data at a glance:</p>
-            <div class="chart-container">
-                <canvas id="envDataChart"></canvas>
-            </div>
-        </div>
+  </div>
 
-        <!-- Radar chart to visualize the overall distribution of carbon footprint for different categories -->
-        <div class="col-lg-4">
-          <p>Total carbon footprint by categories:</p>
-          <div class="chart-container">
-              <canvas id="cfDistributionChart"></canvas>
-          </div>
+  <div class="container">
+
+    {% include 'partials/_messages.html' %}
+
+    <!-- TABLE -->
+    {% if environmental_data.count %}
+    <p>Below is a summary of your environmental data, highlighting key values and characteristics.</p>
+    <table class="table table-striped table-hover mb-4">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Energy</th>
+          <th>Amount (kWh)</th>
+          <th>Transportation</th>
+          <th>Distance (km)</th>
+          <th>Clothing</th>
+          <th>Cost (USD)</th>
+          <th>Waste</th>
+          <th>Amount (kg)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loop through the data and display each row in the table if the data has stored values-->
+        {% for data in environmental_data %}
+        <tr>
+          <td>{{ data.date_entered|date:"DATE_FORMAT" }}</td>
+          <td>{{ data.energy_source|title }}</td>
+          <td>{{ data.energy_amount }}</td>
+          <td>{{ data.transport_mode|title }}</td>
+          <td>{{ data.transport_distance }}</td>
+          <td>{{ data.clothing_type|title }}</td>
+          <td>{{ data.clothing_spent }}</td>
+          <td>{{ data.waste_type|title }}</td>
+          <td>{{ data.waste_weight }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    <!-- END TABLE -->
+
+    {% if environmental_data.count %}
+    <div class="row mt-4 mb-4">
+      <!-- Histogram showing cumulative environmental data -->
+      <div class="col-lg-8">
+        <p>Here is a summary of your weekly environmental data at a glance:</p>
+        <div class="chart-container">
+          <canvas id="envDataChart"></canvas>
         </div>
       </div>
 
-      <div class="row mt-4">
-        <!-- Histogram showing cumulative carbon footprint data -->
-        <div class="col-lg-6">
-          <p>Your weekly carbon footprint breakdown:</p>
-            <div class="chart-container">
-                <canvas id="cfCategoryDataChart"></canvas>
-            </div>
+      <!-- Radar chart to visualize the overall distribution of carbon footprint for different categories -->
+      <div class="col-lg-4">
+        <p>Total carbon footprint by categories:</p>
+        <div class="chart-container">
+          <canvas id="cfDistributionChart"></canvas>
         </div>
-        <!-- Line chart showing all weekly carbon footprint data -->
-        <div class="col-lg-6">
-          <p>Your weekly carbon emission:</p>
-          <div class="chart-container">
-              <canvas id="cfDataChart"></canvas>
-          </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <!-- Histogram showing cumulative carbon footprint data -->
+      <div class="col-lg-6">
+        <p>Your weekly carbon footprint breakdown:</p>
+        <div class="chart-container">
+          <canvas id="cfCategoryDataChart"></canvas>
+        </div>
+      </div>
+      <!-- Line chart showing all weekly carbon footprint data -->
+      <div class="col-lg-6">
+        <p>Your weekly carbon emission:</p>
+        <div class="chart-container">
+          <canvas id="cfDataChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <!-- Dynamically add table data -->
+      <div class="card col-lg-6">
+        <div class="card-header">
+          <h5 class="card-title">Highest Impact Items</h5>
+        </div>
+        <div class="card-body">
+          <table id="highestImpactTable" class="table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="padding-left: 200px">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be dynamically added here -->
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="row mt-4">
-        <!-- Dynamically add table data -->
-        <div class="card col-lg-8">
-          <div class="card-header">
-              <h5 class="card-title">Highest Impact Items</h5>
-          </div>
-          <div class="card-body">
-              <table id="highestImpactTable" class="table">
-                  <thead>
-                      <tr>
-                          <th>Item</th>
-                          <th style="padding-left: 200px">Amount</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <!-- Data will be dynamically added here -->
-                  </tbody>
-              </table>
-          </div>
-      </div>
-
-        <!-- Card showing user's location, time, and date -->
-        <div class="card col-lg-4">
-          <div class="card-header">
-              <h5 class="card-title">User Information</h5>
-          </div>
-          <div class="card-body" id="userInformation">
-              <!-- Data will be dynamically added here using JavaScript -->
-          </div>
+      <!-- Card showing user's location, time, and date -->
+      <div class="card col-lg-6">
+        <div class="card-header">
+          <h5 class="card-title">User Information</h5>
         </div>
-    </div>
-    </div>
-    <div class="row mt-4"></div>
-    <div class="row mt-4 text-center">
-      <p>"At the heart of sustainability lies informed action. Use this data to drive positive change."</p>
-    </div>
-    </div>
-    <footer class="footer mt-4 mb-3">
-      <div class="container">
-          <span class="text-muted">© EI Tracker 2024. All rights reserved.</span>
+        <div class="card-body" id="userInformation">
+          <!-- Data will be dynamically added here using JavaScript -->
+        </div>
       </div>
-  </footer>
+    </div>
+  </div>
+  <div class="row mt-4"></div>
+  {% endif %}
+  <div class="row mt-4 text-center">
+    <p>"At the heart of sustainability lies informed action. Use this data to drive positive change."</p>
   </div>
 </div>
+
+<footer class="footer mt-4 mb-3">
+  <div class="container">
+    <span class="text-muted">© EI Tracker 2024. All rights reserved.</span>
+  </div>
+</footer>
 
 <script src="{% static 'script/analytics.js' %}"></script>
 

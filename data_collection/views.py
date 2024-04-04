@@ -43,6 +43,8 @@ class IndexView(View):
 
         # Get the user's COMPLETE environmental data to display on the table
         environmental_data = EnvironmentData.objects.filter(user=user)
+
+        # Get the user's MOST RECENT carbon footprint data
         try:
             # Get the user's MOST RECENT carbon footprint data to display on charts
             env_data_for_emission = EnvironmentData.objects.filter(user=user).latest('date_entered')
@@ -73,18 +75,39 @@ class IndexView(View):
 
 
 class EnvDataView(View):
-    """Provides a method that renders the environmental data collection page."""
+    """
+    View for collecting and processing environmental data.
+    
+    Attributes:
+    - model (EnvironmentData): Django model for storing environmental data.
+    - calculator (CarbonFootprintCalculator): Calculator for computing carbon footprint.
+    """
+
     def get(self, request):
-        """Collects the user's environmental data"""
+        """
+        Renders the environmental data collection page.
+
+        Args:
+            - request (HttpRequest): The request object.
+
+        Returns:
+            - HttpResponse: The rendered HTML response.
+        """
         return render(request, 'data_collection/env_data.html')
     
     def post(self, request):
-        """Makes a call to the method that calculates the carbon footprint from the
-        user's environmental data."""
+        """
+        Collects the user's environmental data and calculates the carbon footprint.
 
+        Args:
+            - request (HttpRequest): The request object containing user's input data.
+
+        Returns:
+            - HttpResponseRedirect: Redirects the user to the data collection page.
+        """
         user = request.user
 
-        ##### SAVE THE USER'S ENVIRONMENTAL DATA IN THE DATABASE #####
+        # Save the user's environmental data in the database
         environment_data = {
             'user': user,
             'energy_source': request.POST.get('energy_source'),
@@ -121,7 +144,7 @@ class EnvDataView(View):
         environment_data = EnvironmentData(**environment_data)
         environment_data.save()
 
-        ##### CALCULATE CARBON FOOTPRINT #####
+        # Calculate carbon footprint
         environment_data = EnvironmentData.objects.filter(user=user).order_by('-date_entered').first()
         if environment_data is not None:
             carbon_footprint = CarbonFootprintCalculator.calculate_carbon_footprint([environment_data])
@@ -229,108 +252,28 @@ class UserDataRetrievalView(View):
         return HttpResponseNotFound('Data not found')
 
 
-class CarbonFootprintCalculator:
-    """Determines the user's carbon footprint.
+class AnalyticsView(View):
+    """
+    A view to render the analytics page.
+
+    Methods:
+        - get(self, request): Renders the analytics page with the user's environmental data and carbon footprint.
+
+    Attributes:
+        None
     """
 
-    @staticmethod
-    def calculate_carbon_footprint(environment_data):
-        """@staticmethod allows the method to be called
-        directly on the class without needing an instance of the class"""
-
-        # Initialize individual footprints and total footprint
-        individual_footprints = {}
-        total_carbon_footprint = 0
-
-        # Calculate carbon footprint for energy consumption
-        energy_factors = {
-            'electricity': 0.5,
-            'natural_gas': 0.7,
-            'fuel': 2.0,
-        }
-        energy_footprint = sum(data.energy_amount * energy_factors.get(data.energy_source, 0) for data in environment_data)
-        individual_footprints['energy'] = energy_footprint
-        total_carbon_footprint += energy_footprint
-
-        # Calculate carbon footprint for transportation
-        transport_factors = {
-            'air_travel': 1.0,
-            'rail_travel': 0.5,
-            'vehicle': 0.8,
-            'freight': 1.2,
-        }
-        transport_footprint = sum(data.transport_distance * transport_factors.get(data.transport_mode, 0) for data in environment_data)
-        individual_footprints['transportation'] = transport_footprint
-        total_carbon_footprint += transport_footprint
-
-        # Calculate carbon footprint for consumer goods
-        consumer_goods_factors = {
-            'fur': 0.3,
-            'leather': 0.4,
-            'food_bev_tob': 0.5,    # consider adding subcategories
-            'paper_products': 0.2,
-        }
-        consumer_goods_footprint = sum(
-            (data.clothing_spent if data.clothing_type in ['fur', 'leather'] else 0) * consumer_goods_factors.get(data.clothing_type, 0) +
-            data.food_bev_tob_spent * consumer_goods_factors.get('food_bev_tob', 0) +   # consider using subcategories
-            data.paper_products_spent * consumer_goods_factors.get('paper_products', 0)
-            for data in environment_data
-        )
-        individual_footprints['consumer_goods'] = consumer_goods_footprint
-        total_carbon_footprint += consumer_goods_footprint
-
-        # Calculate carbon footprint for waste
-        waste_factors = {
-            'construction_waste': 0.4,
-            'electrical_waste': 0.6,
-            'food_organic_waste': 0.3,
-            'glass_waste': 0.2,
-            'metal_waste': 0.5,
-            'plastic_waste': 0.7,
-        }
-        waste_footprint = sum(data.waste_weight * waste_factors.get(data.waste_type, 0) for data in environment_data)
-        individual_footprints['waste'] = waste_footprint
-        total_carbon_footprint += waste_footprint
-
-        # Calculate carbon footprint for water
-        water_factors = {
-            'water_supply': 0.1,
-            'water_treatment': 0.2,
-        }
-        water_footprint = sum(
-            data.water_supply_weight * water_factors.get('water_supply', 0) +
-            data.water_treatment_volume * water_factors.get('water_treatment', 0)
-            for data in environment_data
-        )
-        individual_footprints['water'] = water_footprint
-        total_carbon_footprint += water_footprint
-
-        # Calculate carbon footprint for technology
-        technology_factors = {
-            'cloud_computing': 0.6,
-            'networking': 0.8,
-            'personal_computing': 0.7,
-        }
-        technology_footprint = sum(
-            data.cloud_computing_number * data.cloud_computing_time * technology_factors.get('cloud_computing', 0) +
-            data.networking_data_transferred * technology_factors.get('networking', 0) +
-            data.personal_computing_time_spent * technology_factors.get('personal_computing', 0)
-            for data in environment_data
-        )
-        individual_footprints['technology'] = technology_footprint
-        total_carbon_footprint += technology_footprint
-
-        total_carbon_footprint = round(total_carbon_footprint, 2)
-
-        # Return a dictionary containing all individual footprints and the total footprint
-        return {'individual_footprints': individual_footprints, 'total_carbon_footprint': total_carbon_footprint}
-
-
-class AnalyticsView(View):
-    """Provides a method that renders the analytics page."""
     def get(self, request):
-        """Renders the analytics page. It passes variables to the analytics page
-        to display the user's environmental data and carbon footprint."""
+        """
+        Renders the analytics page with the user's environmental data and carbon footprint.
+
+        Args:
+            request (HttpRequest): The request object passed by Django.
+
+        Returns:
+            HttpResponse: The HTTP response containing the analytics.html template with the data to display.
+            HttpResponseRedirect: Redirects the user to the login page if not authenticated.
+        """
         if request.user.is_authenticated:
             user = request.user
         else:
@@ -343,7 +286,7 @@ class AnalyticsView(View):
         }
 
         return render(request, 'data_collection/analytics.html', context)
-    
+
 
 class AggregateDataRetrievalView(View):
     """
@@ -372,6 +315,9 @@ class AggregateDataRetrievalView(View):
             # Get the earliest date in the user's data to use in preparing weekly data
             print("Finding the earliest date in the user's data...")
             earliest_date = EnvironmentData.objects.filter(user_id=user_id).order_by('date_entered').values('date_entered').first()
+            if earliest_date is None:
+                return JsonResponse({'weekly_env_data': {}, 'weekly_footprint_data': {}, 'highest_contributors': {}}, status=200)
+            
             earliest_date_value = earliest_date['date_entered']
 
             # Calculate the starting date of the first week
@@ -495,6 +441,11 @@ class DataProjectionView(View):
 
         print("Data:", data)
 
+        # Check if data is empty
+        if not data['weekly_env_data'] or not data['weekly_footprint_data']:
+            # Redirect the user to data_collection/index.html in the case where data is empty
+            return render(request, 'data_collection/index.html')
+
         # Perform trend analysis
         # For simplicity, let's assume we're predicting the next week's data based on the average change per week
         last_week_env = data['weekly_env_data'][list(data['weekly_env_data'].keys())[-1]]
@@ -543,9 +494,28 @@ class DataProjectionView(View):
 
 
 class DataDisplayView(View):
-    """Provides a method that displays the user's selected environmental data and carbon footprint."""
+    """
+    A view to display the user's selected environmental data and carbon footprint.
+
+    Methods:
+        - get(self, request, environment_data_id): Displays the user's selected environmental data and carbon footprint.
+
+    Attributes:
+        None
+    """
+
     def get(self, request, environment_data_id):
-        """Displays the user's selected environmental data and carbon footprint."""
+        """
+        Displays the user's selected environmental data and carbon footprint.
+
+        Args:
+            request (HttpRequest): The request object passed by Django.
+            environment_data_id (int): The id of the environmental data record to display.
+
+        Returns:
+            HttpResponse: The HTTP response containing the display_data.html template with the data to display.
+            HttpResponseRedirect: Redirects the user to the login page if not authenticated.
+        """
         if request.user.is_authenticated:
             user = request.user
         else:
@@ -557,14 +527,15 @@ class DataDisplayView(View):
         # Get the user's total carbon footprint data
         carbon_footprint_data = CarbonFootprintData.objects.get(environment_data_id=environment_data_id)
         total_carbon_footprint = {
-                    'total_carbon_footprint': carbon_footprint_data.total_carbon_footprint,
-                }
+            'total_carbon_footprint': carbon_footprint_data.total_carbon_footprint,
+        }
 
         context = {
             'data_id': environment_data_id,
             'environmental_data': environmental_data,
             'total_carbon_footprint': total_carbon_footprint,
-        }        
+        }
+
         return render(request, 'data_collection/display_data.html', context)
 
 
@@ -573,34 +544,11 @@ class DataDeletionView(View):
     View to delete a user's environmental data record.
 
     Methods:
-        - get(self, request, environment_data_id): Displays a confirmation page for the data deletion.
         - post(self, request, environment_data_id): Deletes a user's environmental data record.
 
     Attributes:
         None
     """
-
-    def get(self, request, environment_data_id):
-        """
-        Displays a confirmation page for the data deletion.
-
-        Args:
-            request (HttpRequest): The request object passed by Django.
-            environment_data_id (int): The id of the environmental data record to delete.
-
-        Returns:
-            HttpResponse: The HTTP response containing the confirmation page.
-            HttpResponseNotFound: If the specified environmental data record does not exist.
-        """
-        try:
-            env_data_record = EnvironmentData.objects.get(id=environment_data_id, user=request.user)
-        except EnvironmentData.DoesNotExist:
-            # Handle case where the specified data record does not exist
-            return HttpResponseNotFound('The specified data record does not exist.')
-
-        
-        return render(request, 'data_collection/confirm_delete.html', {'data_record': env_data_record})
-    
     def post(self, request, environment_data_id):
         """
         Deletes a user's environmental data record and its associated carbon footprint data.
@@ -610,8 +558,7 @@ class DataDeletionView(View):
             environment_data_id (int): The id of the environmental data record to delete.
 
         Returns:
-            HttpResponseRedirect: Redirects the user to 'data_collection' page after deletion.
-            HttpResponseNotFound: If the specified environmental data record does not exist.
+            JsonResponse: A JSON response indicating whether the deletion was successful.
         """
         print("Deleting data...")
         try:
@@ -624,6 +571,117 @@ class DataDeletionView(View):
 
         except EnvironmentData.DoesNotExist:
             # Handle case where the specified data record does not exist
-            return HttpResponseNotFound('The specified data record does not exist.')
+            return JsonResponse({'message': 'The specified data record does not exist.'}, status=404)
 
-        return redirect('data_collection')
+        return JsonResponse({'message': 'Data deleted successfully.'})
+
+
+class CarbonFootprintCalculator:
+    """
+    A class that determines the user's carbon footprint based on environmental data.
+
+    Methods:
+        - calculate_carbon_footprint(environment_data): Calculates the user's carbon footprint based on the provided environmental data.
+
+    Attributes:
+        None
+    """
+
+    @staticmethod
+    def calculate_carbon_footprint(environment_data):
+        """
+        Calculates the user's carbon footprint based on the provided environmental data.
+
+        Args:
+            environment_data (QuerySet): A QuerySet containing the user's environmental data.
+
+        Returns:
+            dict: A dictionary containing the individual carbon footprints for different categories
+            and the total carbon footprint.
+        """
+        # Initialize individual footprints and total footprint
+        individual_footprints = {}
+        total_carbon_footprint = 0
+
+        # Calculate carbon footprint for energy consumption
+        energy_factors = {
+            'electricity': 0.5,
+            'natural_gas': 0.7,
+            'fuel': 2.0,
+        }
+        energy_footprint = sum(data.energy_amount * energy_factors.get(data.energy_source, 0) for data in environment_data)
+        individual_footprints['energy'] = energy_footprint
+        total_carbon_footprint += energy_footprint
+
+        # Calculate carbon footprint for transportation
+        transport_factors = {
+            'air_travel': 1.0,
+            'rail_travel': 0.5,
+            'vehicle': 0.8,
+            'freight': 1.2,
+        }
+        transport_footprint = sum(data.transport_distance * transport_factors.get(data.transport_mode, 0) for data in environment_data)
+        individual_footprints['transportation'] = transport_footprint
+        total_carbon_footprint += transport_footprint
+
+        # Calculate carbon footprint for consumer goods
+        consumer_goods_factors = {
+            'fur': 0.3,
+            'leather': 0.4,
+            'food_bev_tob': 0.5,    # consider adding subcategories
+            'paper_products': 0.2,
+        }
+        consumer_goods_footprint = sum(
+            (data.clothing_spent if data.clothing_type in ['fur', 'leather'] else 0) * consumer_goods_factors.get(data.clothing_type, 0) +
+            data.food_bev_tob_spent * consumer_goods_factors.get('food_bev_tob', 0) +   # consider using subcategories
+            data.paper_products_spent * consumer_goods_factors.get('paper_products', 0)
+            for data in environment_data
+        )
+        individual_footprints['consumer_goods'] = consumer_goods_footprint
+        total_carbon_footprint += consumer_goods_footprint
+
+        # Calculate carbon footprint for waste
+        waste_factors = {
+            'construction_waste': 0.4,
+            'electrical_waste': 0.6,
+            'food_organic_waste': 0.3,
+            'glass_waste': 0.2,
+            'metal_waste': 0.5,
+            'plastic_waste': 0.7,
+        }
+        waste_footprint = sum(data.waste_weight * waste_factors.get(data.waste_type, 0) for data in environment_data)
+        individual_footprints['waste'] = waste_footprint
+        total_carbon_footprint += waste_footprint
+
+        # Calculate carbon footprint for water
+        water_factors = {
+            'water_supply': 0.1,
+            'water_treatment': 0.2,
+        }
+        water_footprint = sum(
+            data.water_supply_weight * water_factors.get('water_supply', 0) +
+            data.water_treatment_volume * water_factors.get('water_treatment', 0)
+            for data in environment_data
+        )
+        individual_footprints['water'] = water_footprint
+        total_carbon_footprint += water_footprint
+
+        # Calculate carbon footprint for technology
+        technology_factors = {
+            'cloud_computing': 0.6,
+            'networking': 0.8,
+            'personal_computing': 0.7,
+        }
+        technology_footprint = sum(
+            data.cloud_computing_number * data.cloud_computing_time * technology_factors.get('cloud_computing', 0) +
+            data.networking_data_transferred * technology_factors.get('networking', 0) +
+            data.personal_computing_time_spent * technology_factors.get('personal_computing', 0)
+            for data in environment_data
+        )
+        individual_footprints['technology'] = technology_footprint
+        total_carbon_footprint += technology_footprint
+
+        total_carbon_footprint = round(total_carbon_footprint, 2)
+
+        # Return a dictionary containing all individual footprints and the total footprint
+        return {'individual_footprints': individual_footprints, 'total_carbon_footprint': total_carbon_footprint}
