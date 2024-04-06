@@ -27,7 +27,10 @@ SECRET_KEY = 'django-insecure-an*#5w+llf0629pzk^889gkw_1!wk1fj5#p1pxp&p+e_rt5eu@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'geodatawork.tech',
+    'www.geodatawork.tech',
+]
 
 
 # Application definition
